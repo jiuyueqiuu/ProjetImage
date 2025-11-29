@@ -282,8 +282,15 @@ ImageGris doubleSeuillage(ImageGris imgIntensite, ImageGris imgContour, int seui
  * @return le double seuillage de img
  **/
 ImageGris doubleSeuillage(ImageGris imgIntensite, int seuilFort, int seuilFaible, int nbAmeliorations) {
-    // Remplacez cette ligne et la suivante par le code adéquat
-    throw runtime_error("Fonction doubleSeuillage non implantée ligne 159");
+
+    ImageGris imgContour = seuillage(imgIntensite, seuilFort);
+
+    for (int k = 0; k < nbAmeliorations; k++) {
+        imgContour = doubleSeuillage(imgIntensite, imgContour, seuilFaible);
+    }
+
+    return imgContour;
+    
 }
 
 
