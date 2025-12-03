@@ -78,7 +78,7 @@ ImageGris lirePGM(string source) {
     if (magic != "P2") throw runtime_error("Format PGM incorrect (P2 attendu)");
 
     int hauteur, largeur, maxval;
-    f >> hauteur >> largeur >> maxval;
+    f >> largeur >> hauteur >> maxval;
 
     ImageGris img(hauteur, vector<double>(largeur));
 
@@ -102,25 +102,25 @@ ImageGris lirePGM(string source) {
  **/
 void ecrirePGM(ImageGris img, string cible) {
     ofstream out(cible);
-    if (!out) {
-        throw runtime_error("Impossible de créer le fichier : " + cible);
-    }
+    if (!out) throw runtime_error("Impossible de créer le fichier : " + cible);
 
     int hauteur = img.size();
     int largeur = img[0].size();
 
     out << "P2\n";
-    out << hauteur << " " << largeur << "\n";
+    out << largeur << " " << hauteur << "\n";  // PGM: width height
     out << 255 << "\n";
 
     for (int i = 0; i < hauteur; i++) {
         for (int j = 0; j < largeur; j++) {
-            out << img[i][j];
-            out << " "; 
+            int val = round(img[i][j]);
+            val = max(0, min(255, val));
+            out << val << " ";
         }
         out << "\n";
     }
 }
+
 
 /** Teste si deux images en teintes de gris sont égales modulo imprécision numérique
  * En cas de différence un message est affiché
@@ -213,15 +213,8 @@ ImageGris seuillage(ImageGris img, int seuil) {
     for (int i = 0; i < hauteur; i++) {
         for (int j = 0; j < largeur; j++) {
 
-            if (img[i][j] < seuil) {
+            res[i][j] = (img[i][j] < seuil) ? 255 : 0;
 
-                res[i][j] = 0;
-                
-            } else {
-
-                res[i][j] = 255; 
-                
-            }
 
         }
     }
@@ -318,10 +311,6 @@ void seuillageTest() {
     ecrirePGM(seuillage(intensite(lirePGM("images/Willis.512.pgm"  )), 110), "seuillage/Willis.512.pgm");
     cout << "\tProposer des seuils pour Embryos.512.pgm et House.256.pgm" << endl;
 
-
-    // Remplacez cette ligne et la suivante par le code adéquat
-    throw runtime_error("code non implanté ligne 197");
-
 }
 
 void doubleSeuillageTest(){
@@ -348,14 +337,16 @@ void doubleSeuillageIteratifTest() {
     
 }
 
-
-int main(){
-    // Ajouter les appels aux fonctions de test nécessaire
-
-    // Remplacez cette ligne et la suivante par le code adéquat
-    throw runtime_error("code non implanté ligne 220");
-
+int main() {
+    try {
+        renormaliseTest();
+        seuillageTest();
+        doubleSeuillageTest();
+        doubleSeuillageIteratifTest();
+    } catch (const std::exception &e) {
+        std::cerr << "Erreur: " << e.what() << std::endl;
+        return 1;
+    }
 
     return 0;
 }
-

@@ -28,7 +28,7 @@ ImageGris lirePGM(string source) {
     if (magic != "P2") throw runtime_error("Format PGM incorrect (P2 attendu)");
 
     int hauteur, largeur, maxval;
-    f >> hauteur >> largeur >> maxval;
+    f >> largeur >> hauteur >> maxval;
 
     ImageGris img(hauteur, vector<double>(largeur));
 
@@ -54,25 +54,25 @@ ImageGris lirePGM(string source) {
  **/
 void ecrirePGM(ImageGris img, string cible) {
     ofstream out(cible);
-    if (!out) {
-        throw runtime_error("Impossible de créer le fichier : " + cible);
-    }
+    if (!out) throw runtime_error("Impossible de créer le fichier : " + cible);
 
     int hauteur = img.size();
     int largeur = img[0].size();
 
     out << "P2\n";
-    out << hauteur << " " << largeur << "\n";
+    out << largeur << " " << hauteur << "\n";  // PGM: width height
     out << 255 << "\n";
 
     for (int i = 0; i < hauteur; i++) {
         for (int j = 0; j < largeur; j++) {
-            out << img[i][j];
-            out << " "; 
+            int val = round(img[i][j]);
+            val = max(0, min(255, val));
+            out << val << " ";
         }
         out << "\n";
     }
 }
+
 
 
 /** Construit une image cliché d'une image en niveau de gris

@@ -40,7 +40,7 @@ ImageGris lirePGM(string source) {
     if (magic != "P2") throw runtime_error("Format PGM incorrect (P2 attendu)");
 
     int hauteur, largeur, maxval;
-    f >> hauteur >> largeur >> maxval;
+    f >> largeur >> hauteur >> maxval;
 
     ImageGris img(hauteur, vector<double>(largeur));
 
@@ -73,17 +73,19 @@ void ecrirePGM(ImageGris img, string cible) {
     int largeur = img[0].size();
 
     out << "P2\n";
-    out << hauteur << " " << largeur << "\n";
+    out << largeur << " " << hauteur << "\n";
     out << 255 << "\n";
 
     for (int i = 0; i < hauteur; i++) {
         for (int j = 0; j < largeur; j++) {
-            out << img[i][j];
-            out << " "; 
+            int val = round(img[i][j]);
+            val = max(0, min(255, val)); 
+            out << val << " ";
         }
         out << "\n";
     }
 }
+
 
 
 
@@ -136,7 +138,7 @@ ImageGris intensiteH(ImageGris img) {
                 img[i-1][j-1] + 2*img[i][j-1] + img[i+1][j-1]
               - img[i-1][j+1] - 2*img[i][j+1] - img[i+1][j+1];
 
-            res[i][j] = abs(H); 
+            res[i][j] = H; 
         }
     }
 
@@ -165,7 +167,7 @@ ImageGris intensiteV(ImageGris img) {
                 img[i-1][j-1] + 2*img[i-1][j] + img[i-1][j+1]
               - img[i+1][j-1] - 2*img[i+1][j] - img[i+1][j+1];
 
-            res[i][j] = abs(V);
+            res[i][j] = V;
         }
     }
 
