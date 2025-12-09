@@ -7,6 +7,8 @@
 #include <cmath>
 using namespace std;
 
+struct Couleur { double r, g, b; };
+typedef vector<vector<Couleur>> Image;
 
 
 /// BEGIN EnsemblePoints
@@ -18,8 +20,6 @@ typedef vector<double> Point;
 /** Structure de donnee representant un ensemble de points dans l'espace
     spacio colorimetrique **/
 typedef vector<Point> EnsemblePoints;
-
-typedef vector<EnsemblePoints> Image;
 /// END EnsemblePoints
 
 double distancePoints(Point p, Point c) {
@@ -194,9 +194,9 @@ EnsemblePoints pivotSuperPixel (Image img, double lambda, int mu) {
             Point p(5);
             p[0] = x;
             p[1] = y;
-            p[2] = lambda * img[y][x][0];
-            p[3] = lambda * img[y][x][1];
-            p[4] = lambda * img[y][x][2];
+            p[2] = lambda * img[y][x].r;
+            p[3] = lambda * img[y][x].g;
+            p[4] = lambda * img[y][x].b;
             res.push_back(p);
         }
     }
@@ -223,9 +223,9 @@ EnsemblePoints superPixels(Image img, double lambda, int mu, int nbAmeliorations
             Point p(5);
             p[0] = x;
             p[1] = y;
-            p[2] = lambda * img[y][x][0];
-            p[3] = lambda * img[y][x][1];
-            p[4] = lambda * img[y][x][2];
+            p[2] = lambda * img[y][x].r;
+            p[3] = lambda * img[y][x].g;
+            p[4] = lambda * img[y][x].b;
             P.push_back(p);
         }
     }
@@ -246,20 +246,20 @@ EnsemblePoints superPixels(Image img, double lambda, int mu, int nbAmeliorations
 Image superPixel(Image img, double lambda, int mu, int nbAmeliorations) {
     int hauteur = img.size();
     int largeur = img[0].size();
-    Image res(hauteur, EnsemblePoints(largeur, vector<double>(3)));
+    Image res(hauteur, vector<Couleur>(largeur));
     EnsemblePoints C = superPixels(img, lambda, mu, nbAmeliorations);
     for (int y = 0; y < hauteur; y++) {
         for (int x = 0; x < largeur; x++) {
             Point p(5);
             p[0] = x;
             p[1] = y;
-            p[2] = lambda * img[y][x][0];
-            p[3] = lambda * img[y][x][1];
-            p[4] = lambda * img[y][x][2];
+            p[2] = lambda * img[y][x].r;
+            p[3] = lambda * img[y][x].g;
+            p[4] = lambda * img[y][x].b;
             int index = plusProcheVoisin(p, C);
-            res[y][x][0] = C[index][2] / lambda;
-            res[y][x][1] = C[index][3] / lambda;
-            res[y][x][2] = C[index][4] / lambda;
+            res[y][x].r = C[index][2] / lambda;
+            res[y][x].g = C[index][3] / lambda;
+            res[y][x].b = C[index][4] / lambda;
         }
     }
     return res;
