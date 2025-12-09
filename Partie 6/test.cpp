@@ -7,7 +7,7 @@
 #include <cmath>
 using namespace std;
 
-typedef vector<vector<double>> Image;
+
 
 /// BEGIN EnsemblePoints
 
@@ -18,6 +18,8 @@ typedef vector<double> Point;
 /** Structure de donnee representant un ensemble de points dans l'espace
     spacio colorimetrique **/
 typedef vector<Point> EnsemblePoints;
+
+typedef vector<EnsemblePoints> Image;
 /// END EnsemblePoints
 
 double distancePoints(Point p, Point c) {
@@ -183,7 +185,23 @@ EnsemblePoints FAST_KMoyenne(EnsemblePoints P, EnsemblePoints C, int nbAmeliorat
  * @param mu un entier
  * @return un ensemble de points dans l'espace spatio colorimetrique
  **/
-EnsemblePoints pivotSuperPixel (Image img, double lambda, int mu);
+EnsemblePoints pivotSuperPixel (Image img, double lambda, int mu) {
+    EnsemblePoints res;
+    int hauteur = img.size();
+    int largeur = img[0].size();
+    for (int y = mu / 2; y < hauteur; y += mu) {
+        for (int x = mu / 2; x < largeur; x += mu) {
+            Point p(5);
+            p[0] = x;
+            p[1] = y;
+            p[2] = lambda * img[y][x][0];
+            p[3] = lambda * img[y][x][1];
+            p[4] = lambda * img[y][x][2];
+            res.push_back(p);
+        }
+    }
+    return res;
+}
 /// END pivotSuperPixel
 
 /// BEGIN superPixels
@@ -195,7 +213,25 @@ EnsemblePoints pivotSuperPixel (Image img, double lambda, int mu);
  * @param nbAmeliorations un entier
  * @return un ensemble de points, les superpixels
  **/
-EnsemblePoints superPixels(Image img, double lambda, int mu, int nbAmeliorations);
+EnsemblePoints superPixels(Image img, double lambda, int mu, int nbAmeliorations) {
+    EnsemblePoints C = pivotSuperPixel(img, lambda, mu);
+    int hauteur = img.size();
+    int largeur = img[0].size();
+    EnsemblePoints P;
+    for (int y = 0; y < hauteur; y++) {
+        for (int x = 0; x < largeur; x++) {
+            Point p(5);
+            p[0] = x;
+            p[1] = y;
+            p[2] = lambda * img[y][x][0];
+            p[3] = lambda * img[y][x][1];
+            p[4] = lambda * img[y][x][2];
+            P.push_back(p);
+        }
+    }
+    C = FAST_KMoyenne(P, C, nbAmeliorations);
+    return C;
+}
 /// END superPixels
 
 /// BEGIN SuperPixel
@@ -207,6 +243,26 @@ EnsemblePoints superPixels(Image img, double lambda, int mu, int nbAmeliorations
  * @param nbAmeliorations
  * @return l'image associee aux superpixels d'une image
  **/
-Image superPixel(Image img, double lambda, int mu, int nbAmeliorations);
+Image superPixel(Image img, double lambda, int mu, int nbAmeliorations) {
+    int hauteur = img.size();
+    int largeur = img[0].size();
+    Image res(hauteur, EnsemblePoints(largeur, vector<double>(3)));
+    EnsemblePoints C = superPixels(img, lambda, mu, nbAmeliorations);
+    for (int y = 0; y < hauteur; y++) {
+        for (int x = 0; x < largeur; x++) {
+            Point p(5);
+            p[0] = x;
+            p[1] = y;
+            p[2] = lambda * img[y][x][0];
+            p[3] = lambda * img[y][x][1];
+            p[4] = lambda * img[y][x][2];
+            int index = plusProcheVoisin(p, C);
+            res[y][x][0] = C[index][2] / lambda;
+            res[y][x][1] = C[index][3] / lambda;
+            res[y][x][2] = C[index][4] / lambda;
+        }
+    }
+    return res;
+}
 /// END SuperPixel
 
