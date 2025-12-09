@@ -191,6 +191,7 @@ EnsemblePoints pivotSuperPixel (Image img, double lambda, int mu) {
     EnsemblePoints res;
     int hauteur = img.size();
     int largeur = img[0].size();
+    if (img.empty() || img[0].empty()) return EnsemblePoints();
     for (int y = mu / 2; y < hauteur; y += mu) {
         for (int x = mu / 2; x < largeur; x += mu) {
             Point p(5);
@@ -219,6 +220,7 @@ EnsemblePoints superPixels(Image img, double lambda, int mu, int nbAmeliorations
     EnsemblePoints C = pivotSuperPixel(img, lambda, mu);
     int hauteur = img.size();
     int largeur = img[0].size();
+    if (img.empty() || img[0].empty()) return EnsemblePoints();
     EnsemblePoints P;
     for (int y = 0; y < hauteur; y++) {
         for (int x = 0; x < largeur; x++) {
@@ -248,6 +250,7 @@ EnsemblePoints superPixels(Image img, double lambda, int mu, int nbAmeliorations
 Image superPixel(Image img, double lambda, int mu, int nbAmeliorations) {
     int hauteur = img.size();
     int largeur = img[0].size();
+    if (img.empty() || img[0].empty()) return Image();
     Image res(hauteur, vector<Couleur>(largeur));
     EnsemblePoints C = superPixels(img, lambda, mu, nbAmeliorations);
     for (int y = 0; y < hauteur; y++) {
