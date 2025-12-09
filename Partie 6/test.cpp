@@ -126,21 +126,23 @@ Point barycentre(EnsemblePoints Q) {
  * @return C un ensemble de points les positions finales de points pilotes
  **/
 EnsemblePoints KMoyenne(EnsemblePoints P, EnsemblePoints C, int nbAmeliorations) {
+    for (int iter = 0; iter < nbAmeliorations; iter++) {
+        vector<EnsemblePoints> clusters(C.size());
 
-    for (int i = 0; i < nbAmeliorations; i++) {
-        EnsemblePoints nouveauC = C;
+        for (auto p : P) {
+            int index = plusProcheVoisin(p, C);
+            clusters[index].push_back(p);
+        }
+
         for (int k = 0; k < C.size(); k++) {
-            EnsemblePoints Q = sousEnsemble(P, C, k);
-            if (Q.size() > 0) {
-                nouveauC[k] = barycentre(Q);
+            if (!clusters[k].empty()) {
+                C[k] = barycentre(clusters[k]);
             }
         }
-        C = nouveauC;
     }
-
     return C;
-
 }
+
 /// END kMoyenne
 
 /// BEGIN FASTkMoyenne
