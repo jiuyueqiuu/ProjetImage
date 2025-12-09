@@ -189,13 +189,15 @@ EnsemblePoints FAST_KMoyenne(EnsemblePoints P, EnsemblePoints C, int nbAmeliorat
  * @param mu un entier
  * @return un ensemble de points dans l'espace spatio colorimetrique
  **/
-EnsemblePoints pivotSuperPixel (Image img, double lambda, int mu) {
+EnsemblePoints pivotSuperPixel(Image img, double lambda, int mu) {
     EnsemblePoints res;
     int hauteur = img.size();
+    if (hauteur == 0) return res;
     int largeur = img[0].size();
-    if (img.empty() || img[0].empty()) return EnsemblePoints();
-    for (int y = mu / 2; y < hauteur; y += mu) {
-        for (int x = mu / 2; x < largeur; x += mu) {
+    if (largeur == 0) return res;
+
+    for (int y = mu/2; y < hauteur; y += mu)
+        for (int x = mu/2; x < largeur; x += mu) {
             Point p(5);
             p[0] = x;
             p[1] = y;
@@ -204,9 +206,20 @@ EnsemblePoints pivotSuperPixel (Image img, double lambda, int mu) {
             p[4] = lambda * img[y][x].b;
             res.push_back(p);
         }
+
+    if (res.empty()) {
+        Point p(5);
+        p[0] = largeur/2;
+        p[1] = hauteur/2;
+        p[2] = lambda * img[hauteur/2][largeur/2].r;
+        p[3] = lambda * img[hauteur/2][largeur/2].g;
+        p[4] = lambda * img[hauteur/2][largeur/2].b;
+        res.push_back(p);
     }
+
     return res;
 }
+
 /// END pivotSuperPixel
 
 /// BEGIN superPixels
