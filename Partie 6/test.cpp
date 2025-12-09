@@ -51,7 +51,7 @@ double distanceAEnsemble(Point p, EnsemblePoints C) {
  * @return l'index du plus proche voisin
  **/
 int plusProcheVoisin(Point p, EnsemblePoints C) {
-    int indexMin = -1;
+    int indexMin = 0;
     long double distMin = 10000000000000;
 
     for (int i = 0; i < C.size(); i++) {
@@ -93,7 +93,26 @@ EnsemblePoints sousEnsemble(EnsemblePoints P, EnsemblePoints C, int k) {
  * @param Q un ensemble de points
  * @return c le barycentre de Q
  **/
-Point barycentre(EnsemblePoints Q);
+Point barycentre(EnsemblePoints Q) {
+    if (Q.size() == 0) {
+        return Point();
+    }
+
+    Point res(Q[0].size());
+
+    for (auto p : Q) {
+        for (int i = 0; i < res.size(); i++) {
+            res[i] += p[i];
+        }
+    }
+
+    for (int j = 0; j < res.size(); j++) {
+        res[j] /= Q.size();
+    }
+
+    return res;
+}
+
 /// END barycentre
 
 /// BEGIN kMoyenne
@@ -104,7 +123,22 @@ Point barycentre(EnsemblePoints Q);
  * @param nbAmeliorations:entier le nombre de fois ou l'amelioration va etre effectuee
  * @return C un ensemble de points les positions finales de points pilotes
  **/
-EnsemblePoints KMoyenne(EnsemblePoints P, EnsemblePoints C, int nbAmeliorations);
+EnsemblePoints KMoyenne(EnsemblePoints P, EnsemblePoints C, int nbAmeliorations) {
+
+    for (int i = 0; i < nbAmeliorations; i++) {
+        EnsemblePoints nouveauC = C;
+        for (int k = 0; k < C.size(); k++) {
+            EnsemblePoints Q = sousEnsemble(P, C, k);
+            if (Q.size() > 0) {
+                nouveauC[k] = barycentre(Q);
+            }
+        }
+        C = nouveauC;
+    }
+
+    return C;
+
+}
 /// END kMoyenne
 
 /// BEGIN FASTkMoyenne
@@ -115,7 +149,29 @@ EnsemblePoints KMoyenne(EnsemblePoints P, EnsemblePoints C, int nbAmeliorations)
  * @param nbAmeliorations:entier le nombre de fois ou l'amelioration va etre effectuee
  * @return C un ensemble de points les positions finales de points pilotes
  **/
-EnsemblePoints FAST_KMoyenne(EnsemblePoints P, EnsemblePoints C, int nbAmeliorations);
+EnsemblePoints FAST_KMoyenne(EnsemblePoints P, EnsemblePoints C, int nbAmeliorations) {
+    vector<vector<Point>> clusters(C.size());
+
+    for (int i = 0; i < nbAmeliorations; i++) {
+        for (int k = 0; k < clusters.size(); k++) {
+            clusters[k].clear();
+        }
+
+        for (int p = 0; p < P.size(); p++) {
+            int index = plusProcheVoisin(P[p], C);
+            clusters[index].push_back(P[p]);
+        }
+
+        for (int j= 0; j < C.size(); j++) {
+            if (clusters[j].size() > 0) {
+                C[j] = barycentre(clusters[j]);
+            }
+        }
+    }
+
+    return C;
+}
+
 /// END FASTkMoyenne
 
 /// BEGIN pivotSuperPixel
