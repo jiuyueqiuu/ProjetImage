@@ -1,0 +1,19 @@
+superpixel.cpp:187:38: error: type
+      '__gnu_cxx::__alloc_traits<std::allocator<Couleur>,
+      Couleur>::value_type' (aka 'Couleur') does not provide a
+      subscript operator
+            p[2] = lambda * img[y][x][0];
+                            ~~~~~~~~~^~
+superpixel.cpp:188:38: error: type
+      '__gnu_cxx::__alloc_traits<std::allocator<Couleur>,
+      Couleur>::value_type' (aka 'Couleur') does not provide a
+      subscript operator
+            p[3] = lambda * img[y][x][1];
+                            ~~~~~~~~~^~
+superpixel.cpp:189:38: error: type
+      '__gnu_cxx::__alloc_traits<std::allocator<Couleur>,
+      Couleur>::value_type' (aka 'Couleur') does not provide a
+      subscript operator
+            p[4] = lambda * img[y][x][2];
+                            ~~~~~~~~~^~
+16 errors generated.
