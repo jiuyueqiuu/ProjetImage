@@ -55,6 +55,8 @@ double distanceAEnsemble(Point p, EnsemblePoints C) {
 int plusProcheVoisin(Point p, EnsemblePoints C) {
     int indexMin = 0;
     long double distMin = 10000000000000;
+    if (C.empty()) throw runtime_error("plusProcheVoisin called on empty EnsemblePoints");
+
 
     for (int i = 0; i < C.size(); i++) {
         double d = distancePoints(p, C[i]);
@@ -253,6 +255,7 @@ Image superPixel(Image img, double lambda, int mu, int nbAmeliorations) {
     if (img.empty() || img[0].empty()) return Image();
     Image res(hauteur, vector<Couleur>(largeur));
     EnsemblePoints C = superPixels(img, lambda, mu, nbAmeliorations);
+    if (C.empty()) return res;
     for (int y = 0; y < hauteur; y++) {
         for (int x = 0; x < largeur; x++) {
             Point p(5);
